@@ -1,15 +1,21 @@
 from __future__ import annotations
 
+import os
 import shutil
+import sys
 from pathlib import Path
 from typing import Optional
 
 DEFAULT_OPENCONNECT_PATHS = [
+    Path("C:/Program Files/VPNProfileManager/bin/openconnect.exe"),
+    Path("C:/Program Files (x86)/VPNProfileManager/bin/openconnect.exe"),
     Path("C:/Program Files/OpenConnect/openconnect.exe"),
     Path("C:/Program Files (x86)/OpenConnect/openconnect.exe"),
 ]
 
 DEFAULT_OPENVPN_PATHS = [
+    Path("C:/Program Files/VPNProfileManager/bin/openvpn.exe"),
+    Path("C:/Program Files (x86)/VPNProfileManager/bin/openvpn.exe"),
     Path("C:/Program Files/OpenVPN/bin/openvpn.exe"),
     Path("C:/Program Files (x86)/OpenVPN/bin/openvpn.exe"),
 ]
@@ -17,6 +23,7 @@ DEFAULT_OPENVPN_PATHS = [
 
 class DependencyDetector:
     def __init__(self) -> None:
+        self._runtime_dir = Path(sys.executable).resolve().parent
         self.openconnect_path = self._find_binary("openconnect", DEFAULT_OPENCONNECT_PATHS)
         self.openvpn_path = self._find_binary("openvpn", DEFAULT_OPENVPN_PATHS)
 
@@ -25,9 +32,20 @@ class DependencyDetector:
         self.openvpn_path = self._find_binary("openvpn", DEFAULT_OPENVPN_PATHS)
 
     def _find_binary(self, binary: str, windows_candidates: list[Path]) -> Optional[Path]:
+        env_override = os.environ.get(f"VPNPM_{binary.upper()}_PATH")
+        if env_override:
+            override_path = Path(env_override)
+            if override_path.exists():
+                return override_path
+
         candidate = shutil.which(binary)
         if candidate:
             return Path(candidate)
+
+        bundled = self._runtime_dir / "bin" / f"{binary}.exe"
+        if bundled.exists():
+            return bundled
+
         for path in windows_candidates:
             if path.exists():
                 return path
