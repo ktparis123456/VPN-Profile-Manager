@@ -6,13 +6,10 @@ OpenConnect/OpenVPN client binaries into ``bin`` so the installer can
 ship them under ``Program Files\\VPNProfileManager\\bin``.
 """
 from pathlib import Path
-import sys
 
 block_cipher = None
 
-spec_source = globals().get("__file__") or sys.argv[0]
-spec_path = Path(spec_source).resolve() if spec_source else Path.cwd()
-project_root = spec_path.parent.parent
+project_root = Path(__file__).resolve().parent.parent
 
 bin_payloads = [
     (str(project_root / "vendor" / "windows" / "openconnect.exe"), "bin"),
