@@ -29,6 +29,8 @@
    python -m PyInstaller packaging/pyinstaller-onefolder.spec
    ```
 2. The distributable lands in `dist/VPNProfileManager/` with a `bin` folder containing the bundled VPN clients.
+3. If you invoke PyInstaller from another working directory, the spec now resolves relative to the spec file location; you can
+   also provide an absolute path to `packaging/pyinstaller-onefolder.spec` if you prefer.
 
 ### Inno Setup installer
 1. Open `installer/VPNProfileManager.iss` in Inno Setup (or run `ISCC installer/VPNProfileManager.iss`).

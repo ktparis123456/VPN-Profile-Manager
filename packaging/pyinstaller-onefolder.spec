@@ -10,8 +10,9 @@ import sys
 
 block_cipher = None
 
-spec_path = Path(globals().get("__file__", Path.cwd()))
-project_root = spec_path.resolve().parent.parent
+spec_source = globals().get("__file__") or sys.argv[0]
+spec_path = Path(spec_source).resolve() if spec_source else Path.cwd()
+project_root = spec_path.parent.parent
 
 bin_payloads = [
     (str(project_root / "vendor" / "windows" / "openconnect.exe"), "bin"),
